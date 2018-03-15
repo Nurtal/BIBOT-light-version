@@ -396,7 +396,7 @@ def run(request_term):
 
 	## variables and file initialisation
 	print "[INFO] Initialize log file"
-	log_file = open("bibotlite.log", "w")
+	log_file = open("bibot.log", "w")
 	
 	## Save request term in log file
 	print "[INFO] TERMS : "
@@ -469,10 +469,10 @@ def run(request_term):
 	time_tag = str(now.hour)+"h:"+str(now.minute)+"m:"+str(now.day)+":"+str(now.month)
 	abstract_destination  = "SAVE/run_"+str(time_tag)+"/abstract"
 	meta_destination = "SAVE/run_"+str(time_tag)+"/meta"
-	log_destination = "SAVE/run_"+str(time_tag)+"/bibotlite.log"
+	log_destination = "SAVE/run_"+str(time_tag)+"/bibot.log"
 	shutil.copytree("abstract", abstract_destination)
 	shutil.copytree("meta", meta_destination)
-	shutil.copy("bibotlite.log", log_destination)
+	shutil.copy("bibot.log", log_destination)
 
 
 
@@ -594,7 +594,7 @@ def main(argv):
 	action = ""
 	request_terms = "NA"
 	config_file = "NA"
-	help_content = "Alpha version\nUsage : bibotlite.py -a <action> -r <request> -c <configuration>\n"
+	help_content = "Alpha version\nUsage : bibot.py -a <action> -r <request> -c <configuration>\n"
 	readme = open("README.md", "r")
 	for line in readme:
 		help_content += line
