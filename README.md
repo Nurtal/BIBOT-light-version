@@ -78,5 +78,7 @@ if no configuration file is provide, default values are used.
 ### Usage exemple
 
 ```Bash
-python bibotlite.py -a run -r "machine learning;SjS;big data" -c myconf.csv
+python bibot.py -a run -r "machine learning;SjS;big data" -c myconf.csv
 ```
+
+When the run is complete, bibot store the selected articles in the abstract subolder and the corresponding meta data in the meta subfolder. each articles is designed by it's pmid.

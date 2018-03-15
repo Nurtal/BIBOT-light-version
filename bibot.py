@@ -6,9 +6,9 @@ from __future__ import unicode_literals
 ##==================================================================##
 ## -> Light version of BIBOT, focus on pubmed fetching and natural  ## 
 ## langage processing for the selected articles.                    ##
-##
-##
-##
+## Current version is 1.0.											##
+## Because reviewing is not funny enough.                           ##
+##==================================================================##
 
 
 ##-------------##
@@ -138,7 +138,7 @@ def evaluate_article(pmid):
 	## -> Test if the abstract is cool
 	## -> return true or false
 	##
-	## TODO : config file
+	## TODO : write doc
 	##
 
 	##------------------------##
@@ -381,8 +381,6 @@ def get_huge_list_of_artciles(keywords):
 
 def run(request_term):
 	##
-	## IN PROGRESS
-	##
 	## main function, run the bibot programm
 	##
 
@@ -584,15 +582,10 @@ def main(argv):
 	##
 	## IN PROGRESS
 	##
-	##
-	## TODO:
-	## -> Write header
-	## -> insert run option
-	## -> write help
 
 
 	## BIBOT Header
-	print "===== BIBOT LIGHT VERSION 0.0 ====="
+	print "===== BIBOT LIGHT VERSION 1.0 ====="
 
 	
 	## Arguments list
@@ -601,7 +594,17 @@ def main(argv):
 	action = ""
 	request_terms = "NA"
 	config_file = "NA"
-	help_content = "Alpha version\nUsage : bibotlite.py -a <action> -r <request> -c <configuration>"
+	help_content = "Alpha version\nUsage : bibotlite.py -a <action> -r <request> -c <configuration>\n"
+	readme = open("README.md", "r")
+	for line in readme:
+		help_content += line
+	readme.close
+
+	## check if subfolder exists
+	if(not os.path.isdir("abstract")):
+		os.mkdir("abstract")
+	if(not os.path.isdir("meta")):
+		os.mkdir("meta")
 
 
 	## Retrieve arguments from command line
