@@ -42,13 +42,14 @@ Entrez.email = 'murlock.raspberypi@gmail.com'
 
 
 def fetch_abstract(pmid):
-	"""
-	Retrun abstract of a given
-	article using pmid
-
-	=> Return None when pmid can't be return
-	(can happen when article is in chinese)
-	"""
+	##
+	## Return abstract of a given
+	## article using pmid
+	##
+	## => Return None when pmid can't be return
+	## (can happen when article is in chinese)
+	##
+	
 	handle = efetch(db='pubmed', id=pmid, retmode='xml', )
 	xml_data = read(handle)
 	xml_data = xml_data['PubmedArticle'][0]
@@ -63,32 +64,12 @@ def fetch_abstract(pmid):
 		return None
 
 
-def fetch_article(pmid):
-	"""
-	Test function
-	=> Not working
-	"""
-	handle = efetch(db='pubmed', id=pmid, retmode='xml', )
-	informations = read(handle)
-
-	stuff = informations[u'PubmedArticle'][0] 
-	date = stuff[u'PubmedData']["History"][1]
-	month = date[u'Month']
-	day = date[u'Day']
-	year = date[u'Year']
-
-	print month
-	print day
-	print year
-
-	return "choucroute"
-
-
 def get_ListOfArticles(term, max_count):
-	"""
-	return the list of pmid article conatining
-	the term.
-	"""
+	##
+	## return the list of pmid article conatining
+	## the term.
+	##
+
 	h = Entrez.esearch(db='pubmed', retmax=max_count, term=term)
 	result = Entrez.read(h)
 	listOfArticles = result["IdList"]
@@ -577,10 +558,12 @@ def check_config_file(config_file):
 
 
 def main(argv):
-
-
 	##
-	## IN PROGRESS
+	## The main function, called when the script
+	## is executed.
+	##
+	## -> parse command line arguments and run
+	## 	  BIBOT
 	##
 
 
