@@ -569,6 +569,14 @@ def main(argv):
 
 	## BIBOT Header
 	print "===== BIBOT LIGHT VERSION 1.0 ====="
+	print "|       ___  _ ___  ____ ___       |"
+	print "|       |__] | |__] |  |  |        |"
+	print "|       |__] | |__] |__|  |        |"
+	print "|                                  |"
+	print "==================================="
+                     
+
+
 
 	
 	## Arguments list
@@ -595,6 +603,7 @@ def main(argv):
 	## help -h
 	## action -a <action>
 	## request term -r <rterms>
+	## configuration -c <conf>
 	try:
 		opts, args = getopt.getopt(argv,"ha:r:c:",["action=", "rterms=", "conf="])
 
@@ -631,13 +640,18 @@ def main(argv):
 	## Run BIBOT
 	if(action == "run"):
 		if(request_terms != "NA"):
+			print "####################################"
+			print "============== RUN ================#"
+			print "####################################"
 			run(request_terms)
 		else:
 			print "[ERROR] => can't find request terms. Use -r <rterms> option, see help (-h) for details."
 			sys.exit(2)
 
 	elif(action == "debug"):
-		print "==== DEBUG TRACE ===="
+		print "####################################"
+		print "==== DEBUG TRACE ==================#"
+		print "####################################"
 		print "=> Variables :"
 		print "<action> => " +str(action)
 		print "<rterms> => " +str(request_terms)
