@@ -1,1 +1,0 @@
-Many new biomedical research articles are published every day, accumulating rich information, such as genetic variants, genes, diseases, and treatments. Rapid yet accurate text mining on large-scale scientific literature can discover novel knowledge to better understand human diseases and to improve the quality of disease diagnosis, prevention, and treatment.

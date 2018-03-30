@@ -1,1 +1,0 @@
-The identification of genomic biomarkers is a key step towards improving diagnostic tests and therapies. We present a reference-free method for this task that relies on a k-mer representation of genomes and a machine learning algorithm that produces intelligible models. The method is computationally scalable and well-suited for whole genome sequencing studies.

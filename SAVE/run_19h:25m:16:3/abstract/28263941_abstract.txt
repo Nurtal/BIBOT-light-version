@@ -1,1 +1,0 @@
-Although risk adjustment remains a cornerstone for comparing outcomes across hospitals, optimal strategies continue to evolve in the presence of many confounders. We compared conventional regression-based model to approaches particularly suited to leveraging big data.

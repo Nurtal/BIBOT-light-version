@@ -1,1 +1,0 @@
-The aims of this study were to compare the performance of machine learning methods for the prediction of the medical costs associated with spinal fusion in terms of profit or loss in Taiwan Diagnosis-Related Groups (Tw-DRGs) and to apply these methods to explore the important factors associated with the medical costs of spinal fusion.

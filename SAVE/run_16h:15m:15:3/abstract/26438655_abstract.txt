@@ -1,1 +1,0 @@
-2. ML-defined algorithms applied to archived multi-signal continuous VS monitoring data allowed accurate automated classification of VS alerts as real or artifact, and could support data mining for future model building.

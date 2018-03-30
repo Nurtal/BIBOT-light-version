@@ -1,1 +1,0 @@
-Lung cancer is the leading cause of cancer death worldwide. In up to 57% of patients, it is diagnosed at an advanced stage and the 5-year survival rate ranges between 10%-16%. There has been a significant amount of research using machine learning to generate tools using patient data to improve outcomes.
