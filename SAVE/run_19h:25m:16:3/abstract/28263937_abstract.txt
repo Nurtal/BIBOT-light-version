@@ -1,0 +1,1 @@
+Knowledge about drug-drug interactions commonly arises from preclinical trials, from adverse drug reports, or based on knowledge of mechanisms of action. Our aim was to investigate whether drug-drug interactions were discoverable without prior hypotheses using data mining. We focused on warfarin-drug interactions as the prototype.

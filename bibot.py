@@ -477,6 +477,9 @@ def check_request_terms(request_terms):
 	request_term_parsed = False
 	terms = []
 
+	request_terms = request_terms.decode("utf-8")
+	print str(request_terms)
+
 	## check if file exist
 	if(os.path.isfile(request_terms)):
 		data = open(request_terms, "r")
