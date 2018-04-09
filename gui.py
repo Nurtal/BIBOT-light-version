@@ -20,9 +20,13 @@ import os
 import unidecode
 import glob
 import time
+from time import gmtime, strftime
 import datetime
-
+import shutil
+import threading
+import random
 import bibot
+
 
 
 Builder.load_string("""
@@ -140,6 +144,8 @@ Builder.load_string("""
 <Screen2App>:
 	progress_bar: pb
 	result_button: go_button
+    status_message: status
+    joke_message: joke
     BoxLayout:
         canvas:
             Color:
@@ -161,11 +167,23 @@ Builder.load_string("""
         	size_hint_y: None
         	height: '48dp'
 			value: 0
+        Label:
+            id: status
+            markup: True
+            text: "Status"
+            color: 0, 0, 0, 1
+            outline_color: 0, 0.5, 0.5, 1
+            font_size: 30
+        Label:
+            id: joke
+            markup: True
+            color: 0, 0, 0, 1
+            outline_color: 0, 0.5, 0.5, 1
+            font_size: 30
 		Button
 			size_hint: 0.3, 0.4
 			text: "Run"
-			on_release: root.play_with_pb_values()
-            on_release: root.display_something()
+            on_release: root.run_articles_selection_wrapper()
 		Button
 			id: go_button
 			size_hint_x: 0
@@ -297,28 +315,20 @@ class Screen1App(Screen):
 
 
 class Screen2App(Screen):
+
+    ## Screen 2 objects
     progress_bar = ObjectProperty(None)
     result_button = ObjectProperty(None)
+    status_message = ObjectProperty(None)
+    joke_message = ObjectProperty(None)
 
 
-
-    def play_with_pb_values(self):
-        print self.progress_bar.value
-
-        if(self.progress_bar.value < 100):
-			self.progress_bar.value += 25
-        else:
-            print "Display Results"
-            self.result_button.size_hint_y = .5
-            self.result_button.size_hint_x = .5
-            self.result_button.text = "Go to Results"
-            self.result_button.opacity = 1
-            self.result_button.disabled = False
-
-    
-    def display_something(self):
-        """Test an adapatation of run function
-        from BIBOT
+    def run_articles_selection(self):
+        """
+        The main function of bibot, fetch and select
+        articles from pubmed based on their abstract.
+        Functions within this function are called
+        from the bibot script.
         """
 
         ## get request from Screen 1
@@ -327,10 +337,11 @@ class Screen2App(Screen):
 
         ## Dispaly Run information
         print "[INFO] PREPARE FOR RUN"
-
+        self.status_message.text = "Prepare for run"
 
         ## Clean absract and meta folder
         print "[INFO] Cleaning directories"
+        self.status_message.text = "Cleaning directories"
         for abstract_file in glob.glob("abstract/*.txt"):
             os.remove(abstract_file)
         for meta_data in glob.glob("meta/*.csv"):
@@ -338,6 +349,7 @@ class Screen2App(Screen):
 
         ## variables and file initialisation
         print "[INFO] Initialize log file"
+        self.status_message.text = "Initialize log file"
         log_file = open("bibot.log", "w")
 
         ## Save request term in log file
@@ -358,6 +370,7 @@ class Screen2App(Screen):
         Total_number_of_articles = len(big_list)
         log_file.write("Total_number_of_articles;"+str(Total_number_of_articles)+"\n")
         print "[INFO] "+str(Total_number_of_articles) +" articles found"
+        self.status_message.text = "Found "+str(Total_number_of_articles) +" articles to read"
 
         ## Test each articles retrieved from their pmid
         fetched = 0
@@ -365,28 +378,34 @@ class Screen2App(Screen):
         last_filter_passed = 0
         cmpt = 0
 
+        ## Start chrono
+        long_request = False
+        no_joke_display = True
+        time_treshold = 20
+        timer_a = datetime.datetime.now()
+
+
         for article in big_list:
 
             ## try to evaluate the article
             ## require a connection to the
             ## NCBI Server, if succed go on, 
             ## else wait 5 seconds and try again
-
+            
             article_is_evaluated = False
             while(not article_is_evaluated):
                 try:
-                    #print "|| TRY TO PROCESS ARTICLE "+str(article)+ " ||"
                     valid = bibot.evaluate_article(article)
                     article_is_evaluated = True
                 except:
-                    #print "|| CAN'T REACH NCBI, WAIT FOR 5 SECONDS ||"
                     print "[INFO] => CAN'T REACH NCBI, WAIT FOR 5 SECONDS "
+                    self.status_message.text = "Looks like NCBI thinks you'are a hacker, I'm on it ;)"
                     now = datetime.datetime.now()
                     time_tag = str(now.hour)+"h:"+str(now.minute)+"m:"+str(now.day)+":"+str(now.month)
                     log_file.write("["+str(time_tag)+"];can't reach NCBI, wait for 5 seconds\n")
                     time.sleep(5)
 
-
+            ## Get value for filters status
             filter_1_status = "FAILED"
             filter_2_status = "FAILED"
             if(valid[0]):
@@ -404,18 +423,35 @@ class Screen2App(Screen):
             print "[RUN] => "+str(cmpt) +" [PROCESSED] || "+ str(fetched) + " [SELECTED] || FIRST FILTERS ["+filter_1_status+ "] || LAST FILTER ["+filter_2_status+ "] || "+str(float((float(cmpt)/float(Total_number_of_articles))*100)) + "% [COMPLETE]"
             log_file.write(">"+str(article)+";First_Filter="+str(filter_1_status)+";Last_filter="+str(filter_2_status)+"\n")
 
-            ## update progress bar value -> not working for now
-            self.progress_bar.value += 10
+            ## update progress bar value
+            progress = float((float(cmpt)/float(Total_number_of_articles))*100)
+            self.progress_bar.value = progress
+            display_progress = round(progress, 2)
+            self.status_message.text = str(cmpt) +" articles processed, "+str(display_progress)+ "%"
 
-            print "[PROGRESS] => "+str(self.progress_bar.value)
+            ## Check time spend on the task (i.e in the loop)
+            ## if it take more than the time_treshold variable
+            ## and the progress bar is under 50% the programm
+            ## will start to display a few friendly message, 
+            ## randomly selected in a list.
+            timer_b = datetime.datetime.now()
+            c = timer_b - timer_a
+            c = divmod(c.days * 86400 + c.seconds, 60)
+            if(c[1] > time_treshold and progress <= 50.0):
+                long_request = True
 
-            #float((float(cmpt)/float(Total_number_of_articles))*100)
-            
-
+            ## Select and display a joke
+            if(long_request):
+                joke_list = ["You should take a coffe", "In an other life, I'm so fast", "I bet I'm still reading faster than you !", "Boring ...", "You know that drinking tea is good for you ?", "I'm on it"]
+                if(no_joke_display):
+                    self.joke_message.text = joke_list[random.randint(0,len(joke_list)-1)]
+                    no_joke_display = False
+                else:
+                    if(random.randint(0,100) > 80):
+                        self.joke_message.text = joke_list[random.randint(0,len(joke_list)-1)]
 
         ## close log file
         log_file.close()
-
 
         ## Save the results files
         ## and folders
@@ -427,6 +463,32 @@ class Screen2App(Screen):
         shutil.copytree("abstract", abstract_destination)
         shutil.copytree("meta", meta_destination)
         shutil.copy("bibot.log", log_destination)
+
+        ## Go to result button
+        self.result_button.size_hint_y = .5
+        self.result_button.size_hint_x = .5
+        self.result_button.text = "Go to Results"
+        self.result_button.opacity = 1
+        self.result_button.disabled = False
+
+        ## Display end message
+        self.joke_message.text = "Run completed"
+
+            
+
+    def run_articles_selection_wrapper(self):
+        """
+        Wrapper for the run articles_selection_function,
+        design to call the target function in a Thread and
+        therefore update the progress bar.
+        """
+        mythread = threading.Thread(target=self.run_articles_selection)
+        mythread.start()
+
+
+
+
+
 
 
 
