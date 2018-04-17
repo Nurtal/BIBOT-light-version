@@ -26,6 +26,9 @@ import datetime
 import glob
 import getopt
 import sys
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
 
 
 ##------------##
@@ -208,6 +211,9 @@ def evaluate_article(pmid):
 		## Get language of the article
 		article_language = informations[u'PubmedArticle'][0][u'MedlineCitation'][u'Article'][u'Language'][0]
 
+		## Get country of publications
+		country = stuff[u'MedlineCitation'][u'MedlineJournalInfo'][u'Country']
+		
 	except:
 		return (False,False,False)
 
@@ -290,12 +296,15 @@ def evaluate_article(pmid):
 		## for further use
 		title_line = u'>Title;'+unicode(article_title)+u"\n"
 		date_line = u'>Date;'+unicode(day)+u"/"+unicode(month)+u"/"+unicode(year)+u"\n"
+		#date_line = '>Date;'+str(day.encode('utf8'))+"/"+str(month.encode(utf8))+"/"+str(year.encode("utf8"))+"\n"
 		journal_line = u">Journal;"+unicode(journal_name)+u"\n"
+		country_line = u">Country;"+unicode(country)+u"\n"
 		conflict_of_interest_line = u">Conflict;"+unicode(conflict_of_interest)+u"\n"
 		meta_data = open("meta/"+str(pmid)+".csv", "w")
 		meta_data.write(title_line.encode('utf8'))
 		meta_data.write(date_line.encode('utf8'))
 		meta_data.write(journal_line.encode('utf8'))
+		meta_data.write(country_line.encode('utf8'))
 		meta_data.write(conflict_of_interest_line.encode('utf8'))
 		meta_data.close()
 
@@ -457,9 +466,6 @@ def run(request_term):
 
 
 
-
-
-
 def check_request_terms(request_terms):
 	##
 	## check request terms provide to the
@@ -558,6 +564,156 @@ def check_config_file(config_file):
 	return status
 
 
+def get_date_from_meta_save(meta_file):
+	##
+	## Get the date of an article using the
+	## meta data file created on local device,
+	## no connection needed to NCBI server
+	##
+	## -> return the year of publication
+	##
+
+	## Retrieve the year of publication
+	## from the meta data file.
+	year = "NA"
+	meta_data = open(meta_file, "r")
+	for line in meta_data:
+		try:
+			line = line.decode('utf8')
+		except:
+			print "Something went wrong"
+		line = line.replace("\n", "")
+		if(line[0] == ">"):
+
+			line_in_array = line.split(";")
+			if(line_in_array[0] == ">Date"):
+				date_in_array = line_in_array[1].split("/")
+				year = date_in_array[2]
+
+	meta_data.close()
+
+	## return only the year of publication
+	return year
+
+def plot_publications_years(meta_data_folder):
+	##
+	## Retrieve the year of publications of all
+	## articles from the meta_data_folder and
+	## plot the histogramm of publications over
+	## the years
+	##
+
+	## create the structure
+	year_to_count = {}
+	for meta_file in glob.glob(meta_data_folder+"/*.csv"):
+		year = get_date_from_meta_save(meta_file)
+		
+		if(int(year) < 2018):
+
+			if(year not in year_to_count.keys()):
+				year_to_count[year] = 1
+			else:
+				year_to_count[year] += 1
+
+	
+	## add for publi, to remove
+	for key in year_to_count.keys():
+		print "[DATA] => "+str(key)+ " : " +str(year_to_count[key])
+
+	## plot graphe
+	plt.bar(year_to_count.keys(), year_to_count.values(), color='b', align='center', width=0.3)
+	plt.savefig("images/years_publications_evolution.png")
+	plt.close()
+
+
+def plot_country_stats(meta_data_folder):
+	"""
+	Get the country stat from meta data
+	and create a pie chart with these number
+	"""
+
+	## init structure
+	country_to_count = {}
+
+	## Get data
+	meta_file_list = glob.glob(meta_data_folder+"/*.csv")
+	for meta_file in meta_file_list:
+
+		meta_data = open(meta_file, "r")
+		for line in meta_data:
+			line = line.rstrip()
+			try:
+				line_in_array = line.split(";")
+				if(line_in_array[0] == ">Country"):
+					country = line_in_array[1]
+					if(country not in country_to_count.keys()):
+						country_to_count[country] = 1
+					else:
+						country_to_count[country] += 1
+			except:
+				print "[WARNING] => Unable to recover country for "+str(meta_file)
+			
+		meta_data.close()
+
+	## Generate Pie chart 
+	plt.figure(1, figsize=(6,6))
+	labels = country_to_count.keys()
+	fracs = country_to_count.values()
+	plt.pie(fracs, labels=labels, autopct='%1.1f%%', shadow=False, startangle=90)
+	plt.savefig("images/country_repartition.png")
+	plt.close()
+
+
+def plot_articles_stats(log_file):
+	"""
+	IN PROGRESS
+	"""
+
+	## Get data
+	first_filter_pass_cmpt = 0
+	second_filter_pass_cmpt = 0
+	pass_both_filter_cmpt = 0
+	article_cmpt = 0
+
+	log_data = open(log_file, "r")
+	for line in log_data:
+		line = line.replace("\n", "")
+		line_in_array = line.split(";")
+		if(line[0] == ">"):
+
+			article_cmpt += 1
+			
+			filter_1_info = line_in_array[1].split("=")
+			if(filter_1_info[1] == "PASSED"):
+				first_filter_pass_cmpt += 1
+
+			filter_2_info = line_in_array[2].split("=")
+			if(filter_2_info[1] == "PASSED"):
+				second_filter_pass_cmpt += 1
+
+
+			if(filter_1_info[1] == "PASSED" and filter_2_info[1] == "PASSED"):
+				pass_both_filter_cmpt += 1
+
+	log_data.close()
+
+	## Generate pie for data
+	fig, (ax1) = plt.subplots(1, ncols=3)
+
+	# plot each pie chart in a separate subplot
+	first_filter_failed_cmpt = article_cmpt - first_filter_pass_cmpt
+	second_filter_failed_cmpt = article_cmpt - second_filter_pass_cmpt
+	failed_one_filter_cmpt = article_cmpt - pass_both_filter_cmpt 
+	
+	explode = (0, 0.05)
+
+	ax1[0].pie([first_filter_pass_cmpt, first_filter_failed_cmpt], radius=0.5, labels=["Pass", "Failed"], autopct='%1.1f%%', startangle=90)
+	ax1[1].pie([second_filter_pass_cmpt, second_filter_failed_cmpt], labels=["Pass", "Failed"], autopct='%1.1f%%', startangle=90)
+	ax1[2].pie([pass_both_filter_cmpt, failed_one_filter_cmpt], labels=["Pass", "Failed"], autopct='%1.1f%%', startangle=90)
+	
+
+
+	plt.show()
 
 
 def main(argv):

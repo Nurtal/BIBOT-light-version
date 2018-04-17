@@ -144,6 +144,7 @@ Builder.load_string("""
 <Screen2App>:
 	progress_bar: pb
 	result_button: go_button
+    run_button: run_button
     status_message: status
     joke_message: joke
     BoxLayout:
@@ -155,42 +156,50 @@ Builder.load_string("""
                 size: self.size
 
         orientation: "vertical"
-        Label:
-            markup: True
-            text: "Screen 2"
-            color: 0, 0, 0, 1
-            outline_color: 0, 0.5, 0.5, 1
-            font_size: 30
-        ProgressBar:
-        	id: pb
-        	size_hint_x: .5
-        	size_hint_y: None
-        	height: '48dp'
-			value: 0
+        
+        
         Label:
             id: status
             markup: True
             text: "Status"
             color: 0, 0, 0, 1
             outline_color: 0, 0.5, 0.5, 1
-            font_size: 30
+            font_size: 20
+
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'bottom'
+            padding: 30
+            ProgressBar:
+                id: pb
+                size_hint_x: .5
+                size_hint_y: None
+                height: '48dp'
+                value: 0
         Label:
             id: joke
             markup: True
             color: 0, 0, 0, 1
             outline_color: 0, 0.5, 0.5, 1
-            font_size: 30
-		Button
-			size_hint: 0.3, 0.4
-			text: "Run"
-            on_release: root.run_articles_selection_wrapper()
-		Button
-			id: go_button
-			size_hint_x: 0
-			size_hint_y: 0
-			opacity:0
-			disabled: True
-			on_press: root.manager.current = 'Screen3'
+            font_size: 15
+
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'bottom'
+            padding: 50
+            Button:
+                id: run_button
+                size_hint: 0.5, 2.5
+                text: "Run"
+                on_release: root.run_articles_selection_wrapper()
+    		
+            Button:
+    			id: go_button
+    			size_hint_x: 0
+    			size_hint_y: 0
+    			opacity:0
+    			disabled: True
+    			on_press: root.manager.current = 'Screen3'
 
 <Screen3App>:
 
@@ -211,6 +220,33 @@ Builder.load_string("""
 	            color: 0, 0, 0, 1
 	            outline_color: 0, 0.5, 0.5, 1
 	            font_size: 30
+            Image:
+                source: 'images/years_publications_evolution.png'
+                keep_ratio: True
+                allow_stretch: True
+                opacity: 1
+                pos_hint: {'center_x': 0.5, 'center_y': 1}
+            BoxLayout:
+                canvas:
+                    Color:
+                        rgb: 1, 1, 1, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                orientation: "horizontal"
+                Image:
+                    source: 'images/years_publications_evolution.png'
+                    keep_ratio: True
+                    allow_stretch: True
+                    opacity: 1
+                    pos_hint: {'center_x': 0.5, 'center_y': 1}
+                Image:
+                    source: 'images/country_repartition.png'
+                    keep_ratio: True
+                    allow_stretch: True
+                    opacity: 1
+                    pos_hint: {'center_x': 0.5, 'center_y': 1}
 
 	    BoxLayout:
 	        canvas:
@@ -223,10 +259,16 @@ Builder.load_string("""
 	        orientation: "vertical"
 	        Label:
 	            markup: True
-	            text: "Screen 3 - Results 1"
+	            text: "Country Repartition"
 	            color: 0, 0, 0, 1
 	            outline_color: 0, 0.5, 0.5, 1
 	            font_size: 30
+            Image:
+                source: 'images/country_repartition.png'
+                keep_ratio: True
+                allow_stretch: True
+                opacity: 1
+                pos_hint: {'center_x': 0.5, 'center_y': 1}
 
 	    BoxLayout:
 	        canvas:
@@ -321,6 +363,7 @@ class Screen2App(Screen):
     result_button = ObjectProperty(None)
     status_message = ObjectProperty(None)
     joke_message = ObjectProperty(None)
+    run_button = ObjectProperty(None)
 
 
     def run_articles_selection(self):
@@ -464,12 +507,27 @@ class Screen2App(Screen):
         shutil.copytree("meta", meta_destination)
         shutil.copy("bibot.log", log_destination)
 
+
+        ## Generate results
+        self.joke_message.text = "Computing results"
+        bibot.plot_publications_years("meta")
+        bibot.plot_country_stats("meta")
+
+
+        ## Test
+        self.run_button.size_hint_y = 0
+        self.run_button.size_hint_x = 0
+        self.run_button.text = ""
+        self.run_button.opacity = 0
+        self.run_button.disabled = True
+
         ## Go to result button
-        self.result_button.size_hint_y = .5
-        self.result_button.size_hint_x = .5
+        self.result_button.size_hint_y = 2.5
+        self.result_button.size_hint_x = 0.5
         self.result_button.text = "Go to Results"
         self.result_button.opacity = 1
         self.result_button.disabled = False
+
 
         ## Display end message
         self.joke_message.text = "Run completed"
