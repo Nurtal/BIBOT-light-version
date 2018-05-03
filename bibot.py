@@ -667,6 +667,8 @@ def plot_country_stats(meta_data_folder):
 def plot_articles_stats(log_file):
 	"""
 	IN PROGRESS
+	
+	Todo : debug shape of pie
 	"""
 
 	## Get data
@@ -711,9 +713,9 @@ def plot_articles_stats(log_file):
 	ax1[1].pie([second_filter_pass_cmpt, second_filter_failed_cmpt], labels=["Pass", "Failed"], autopct='%1.1f%%', startangle=90)
 	ax1[2].pie([pass_both_filter_cmpt, failed_one_filter_cmpt], labels=["Pass", "Failed"], autopct='%1.1f%%', startangle=90)
 	
-
-
-	plt.show()
+	#plt.show()
+	plt.savefig("images/plot_stats.png")
+	plt.close()
 
 
 def main(argv):
