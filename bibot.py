@@ -139,10 +139,16 @@ def evaluate_article(pmid):
 	validation_check = {}
 	validation_keywords = {}
 
+	exclusion_check = {}
+	exclusion_keywords = {}
+
+	exclusion_keywords_found = False
+
 	## test if config file exist
 	if(os.path.isfile("config.conf")):
 		config_data = open("config.conf", "r")
 		validation_keywords_cmpt = 0
+		exclusion_keywords_cmpt = 0
 		for line in config_data:
 			line = line.replace("\n", "")
 			line_in_array = line.split(";")
@@ -162,6 +168,17 @@ def evaluate_article(pmid):
 					if(elt not in validation_keywords["keywords_"+str(validation_keywords_cmpt)]):
 						validation_keywords["keywords_"+str(validation_keywords_cmpt)].append(str(elt))
 
+			## Retrieve Exclusion list
+			elif(line_in_array[0] == "exclusion keywords"):
+				exclusion_keywords_found = True
+				exclusion_keywords_cmpt += 1
+				exclusion_check["exclusion_"+str(exclusion_keywords_cmpt)] = False
+				exclusion_keywords["exclusion_"+str(exclusion_keywords_cmpt)] = []
+				keywords_list = line_in_array[1].split(",")
+				for elt in keywords_list:
+					if(elt not in exclusion_keywords["exclusion_"+str(exclusion_keywords_cmpt)]):
+						exclusion_keywords["exclusion_"+str(exclusion_keywords_cmpt)].append(str(elt))
+
 		config_data.close()
 
 	## default configuration
@@ -172,7 +189,12 @@ def evaluate_article(pmid):
 		validation_check["keywords_2"] = False
 		validation_keywords["keywords_1"]= ["algorithm", "machine" "learning", "neural", "network", "statistic", "deep", "classification", "model"]
 		validation_keywords["keywords_2"] = ["Sjogren" ,"sjogren", "lupus", "autoimmunity", "rhumatoid", "arthrisis", "RA", "SjS", "SLE"]
+		validation_check["exclusion_1"] = False
+		exclusion_keywords["exclusion_1"]= []
 
+	if(not exclusion_keywords_found):
+		validation_check["exclusion_1"] = False
+		exclusion_keywords["exclusion_1"]= []
 
 	##---------------##
 	## The Easy Part ##
@@ -222,6 +244,10 @@ def evaluate_article(pmid):
 	##----------------##
 	## run further analysis on the abstract using nltk
 
+	##
+	## WORKING ON EXCLUSION LIST
+	##
+
 	## fetch the abstract and convert it to
 	## a nltk text object.
 	abstract_file_name = "abstract/"+str(pmid)+"_abstract.txt"
@@ -257,7 +283,14 @@ def evaluate_article(pmid):
 				if(item in keywords_validation_list):
 					validation_check[key] = True
 
-		
+		## Check exclusion list
+		for item in names_found_in_abstract:
+			for key in exclusion_keywords.keys():
+				exclusion_validation_list = exclusion_keywords[key]
+				if(item in exclusion_validation_list):
+					exclusion_check[key] = True
+
+
 	##--------------##
 	## PASS OR FAIL ##
 	##--------------##
@@ -278,9 +311,16 @@ def evaluate_article(pmid):
 	if(check_date and check_language):
 		easy_check_passed = True
 
-	## Complex filter
+	## Complex filter (inclusion)
 	if(False in validation_check.values()):
 		smart_check_passed = False
+
+	## Complex filter (exclusion)
+	if(True in exclusion_check.values()):
+		smart_check_passed = False
+
+
+
 
 	## Global check
 	if(easy_check_passed and smart_check_passed):
