@@ -115,6 +115,48 @@ def load_text(text_file):
 	return text
 
 
+
+def article_is_a_case_report(abstract_file):
+	"""
+	IN PROGRESS
+	The idea is to check if the article is a case report
+	"""
+
+	## The obvious way: look for declinaison of "case report"
+	## in the abstract, catch the sentence and try to interpret the
+	## meaining
+	sentences_to_investigate = []
+	found_something = False
+
+	## store abstract in a string
+	abstract = open(abstract_file, "r")
+	abstract_text = ""
+	for line in abstract:
+		try:
+			abstract_text += line.decode('utf-8')
+		except:
+			abstract_text = ""
+	abstract.close()
+
+	## catch the suspect sentences
+	sentences = abstract_text.split(". ")
+	for sentence in sentences:
+		words_in_sentence = sentence.split(" ")
+		index = 0
+		for word in words_in_sentence:
+			if(word in ["Case", "Cases", "case", "case"]):
+				if(index + 1 <= len(words_in_sentence)):
+					if(words_in_sentence[index+1] in ["report", "reports"]):
+						sentences_to_investigate.append(sentence)
+			index += 1
+
+	if(len(sentences_to_investigate) > 0):
+		found_something = True
+
+	return found_something
+
+
+
 def evaluate_article(pmid):
 	##
 	## [IN PROGRESS]
@@ -132,6 +174,8 @@ def evaluate_article(pmid):
 
 	## initialize parameters
 	oldest_year_authorized = "NA"
+	case_report_only = False
+	case_report_check = False
 	authorized_languages = []
 	valid_article = False
 	check_date = True
@@ -179,6 +223,11 @@ def evaluate_article(pmid):
 					if(elt not in exclusion_keywords["exclusion_"+str(exclusion_keywords_cmpt)]):
 						exclusion_keywords["exclusion_"+str(exclusion_keywords_cmpt)].append(str(elt))
 
+			## case report only option
+			## if nothing is set, default is False
+			elif(line_in_array[0] == "case report only" and str(line_in_array[1]) == "True"):
+				case_report_only = True
+		
 		config_data.close()
 
 	## default configuration
@@ -195,6 +244,7 @@ def evaluate_article(pmid):
 	if(not exclusion_keywords_found):
 		validation_check["exclusion_1"] = False
 		exclusion_keywords["exclusion_1"]= []
+		
 
 	##---------------##
 	## The Easy Part ##
@@ -290,6 +340,12 @@ def evaluate_article(pmid):
 				if(item in exclusion_validation_list):
 					exclusion_check[key] = True
 
+		## Check if is a case report
+		if(case_report_only):
+			print "[DEBUG] => Case report only"
+			if(article_is_a_case_report(abstract_file_name)):
+				case_report_check = True
+
 
 	##--------------##
 	## PASS OR FAIL ##
@@ -317,6 +373,11 @@ def evaluate_article(pmid):
 
 	## Complex filter (exclusion)
 	if(True in exclusion_check.values()):
+		smart_check_passed = False
+
+	## Case reprot filter
+	if(case_report_only and case_report_check):
+		print "[DEBUG] => EXLUDED"
 		smart_check_passed = False
 
 
@@ -471,7 +532,6 @@ def run(request_term):
 				time_tag = str(now.hour)+"h:"+str(now.minute)+"m:"+str(now.day)+":"+str(now.month)
 				log_file.write("["+str(time_tag)+"];can't reach NCBI, wait for 5 seconds\n")
 				time.sleep(5)
-
 
 		filter_1_status = "FAILED"
 		filter_2_status = "FAILED"
