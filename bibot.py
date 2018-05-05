@@ -145,7 +145,7 @@ def article_is_a_case_report(abstract_file):
 		index = 0
 		for word in words_in_sentence:
 			if(word in ["Case", "Cases", "case", "case"]):
-				if(index + 1 <= len(words_in_sentence)):
+				if(index + 1 < len(words_in_sentence)):
 					if(words_in_sentence[index+1] in ["report", "reports"]):
 						sentences_to_investigate.append(sentence)
 			index += 1
@@ -521,6 +521,11 @@ def run(request_term):
 		## else wait 5 seconds and try again
 		article_is_evaluated = False
 		while(not article_is_evaluated):
+			
+			## only to debug evaluate function
+			valid = evaluate_article(article)
+			article_is_evaluated = True
+			"""
 			try:
 				#print "|| TRY TO PROCESS ARTICLE "+str(article)+ " ||"
 				valid = evaluate_article(article)
@@ -532,6 +537,7 @@ def run(request_term):
 				time_tag = str(now.hour)+"h:"+str(now.minute)+"m:"+str(now.day)+":"+str(now.month)
 				log_file.write("["+str(time_tag)+"];can't reach NCBI, wait for 5 seconds\n")
 				time.sleep(5)
+			"""
 
 		filter_1_status = "FAILED"
 		filter_2_status = "FAILED"
