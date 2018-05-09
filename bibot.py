@@ -26,6 +26,7 @@ import datetime
 import glob
 import getopt
 import sys
+import gensim
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
@@ -987,6 +988,293 @@ def write_tex_report():
 	## close report file
 	report_file.close()
 
+
+
+##-------------------##
+## CLUSTER FUNCTIONS ##################################################################
+##-------------------##                                                              ##
+##                                                                                   ##
+## This section regroup clustering function, abstract are converted into tf-idf      ##
+## representation and distance between them are computed. Custom algorithm is used   ##
+## for clusterring. This part is still work in progress and not yet implemented in   ##
+## the main features, just storing the code here to work on it later.                ##
+##                                                                                   ##
+##***********************************************************************************##
+
+
+
+def load_raw_documents(abstract_folder):
+	"""
+	Load raw documents from abstract folder
+	return a list of abstract in strings
+	"""
+
+	raw_documents = {}
+	abstract_files = glob.glob(str(abstract_folder)+"/*")
+	for abstract in abstract_files:
+
+		pmid = abstract.split("/")
+		pmid = pmid[-1].split("_")
+		pmid = pmid[0]
+
+		abstract_text = ""
+		abstract_data = open(abstract, "r")
+		for line in abstract_data:
+			line = line.replace("\n", "")
+			abstract_text += str(line)
+
+		raw_documents[pmid] = abstract_text
+
+	return raw_documents
+
+
+
+def create_similarity_map(pmid_to_abstract):
+	"""
+	create a similarity map between abstract
+	"""
+
+	## Extract documents
+	## Get the index associated to each pmid
+	raw_documents = pmid_to_abstract.values()
+	pmid_to_index = {}
+	for pmid in pmid_to_abstract:
+		abstract = pmid_to_abstract[pmid]
+		index = 0
+		for document in raw_documents:
+			if(abstract == document):
+				pmid_to_index[pmid] = index
+			index += 1
+	
+	## Tokenization
+	from nltk.tokenize import word_tokenize
+	gen_docs = [[w.lower() for w in word_tokenize(text)] for text in raw_documents]
+
+	## Create a Dictionnary
+	dictionary = gensim.corpora.Dictionary(gen_docs)
+
+	## Create a Corpus
+	corpus = [dictionary.doc2bow(gen_doc) for gen_doc in gen_docs]
+
+	## create a tf - idf model
+	tf_idf = gensim.models.TfidfModel(corpus)
+
+	## create a similarity measure object in tf-idf space
+	sims = gensim.similarities.Similarity('/home/glorfindel/Spellcraft/BIBOT-light-version/',tf_idf[corpus],num_features=len(dictionary))
+
+	## Create a distance map
+	similarity_map = {}
+	for pmid in pmid_to_abstract:
+		similarity_map[pmid] = {}
+		abstract = pmid_to_abstract[pmid]
+
+		query_doc = [w.lower() for w in word_tokenize(abstract)]
+		query_doc_bow = dictionary.doc2bow(query_doc)
+		query_doc_tf_idf = tf_idf[query_doc_bow]
+
+		index = 0
+		for sim in sims[query_doc_tf_idf]:
+
+			pmid_to_test = -1
+			for key in pmid_to_index:
+				if(pmid_to_index[key] == index):
+					pmid_to_test = key
+
+			similarity_map[pmid][pmid_to_test] = sim
+			index += 1
+
+	return similarity_map
+
+
+def find_smallest_distance(similarity_map):
+	"""
+	-> find smallest distance in similarity map, use to
+	define a step for the custerring algorithm.
+	"""
+
+	smallest_distance = 1
+	for pmid in similarity_map.keys():
+		distances = similarity_map[pmid]
+		for pmid_to_test in distances.keys():
+			if(pmid_to_test != pmid and 1 - distances[pmid_to_test] < smallest_distance):
+				smallest_distance = distances[pmid_to_test]
+				
+	return smallest_distance
+
+
+
+def merge_abstract(pmid_list,pmid_to_abstract):
+	"""
+	-> Merge abstracts associated to the pmid in the pmid
+	list and return a new pmid_to_abstract structure with
+	the merged abstracts (and new keys for pmid : pmida_pmidb)
+	"""
+
+	new_abstract = ""
+	new_pmid = ""
+	new_pmid_to_abstract = {}
+
+	for pmid in pmid_to_abstract.keys():
+		if(pmid in pmid_list):
+			new_abstract += str(pmid_to_abstract[pmid])+" "
+		else:
+			new_pmid_to_abstract[pmid] = pmid_to_abstract[pmid]
+
+	if(new_abstract != ""):
+		for item in pmid_list:
+			new_pmid += str(item)+"_"
+		new_pmid = new_pmid[:-1]
+		new_pmid_to_abstract[new_pmid] = new_abstract
+
+	return new_pmid_to_abstract
+
+	
+
+def check_intra_cluster_distance(cluster_id, abstract_folder, intra_dist_treshold):
+	"""
+	-> Control the variance within the cluster, make sure
+	none of the article are more distant than intra_dist_treshold
+	"""
+
+	## compute similarity map
+	pmid_to_abstract = load_raw_documents(abstract_folder)
+	similarity_map = create_similarity_map(pmid_to_abstract)
+
+	## look for distant articles in the same cluster
+	valid_cluster = True
+	pmid_list = cluster_id.split("_")
+	for pmid in pmid_list:
+		for pmid_to_test in pmid_list:
+			if(pmid_to_test != pmid):
+
+				if(similarity_map[pmid][pmid_to_test] <= intra_dist_treshold):
+					valid_cluster = False
+
+	return valid_cluster
+
+
+
+
+
+
+def find_cluster(abstract_folder):
+	"""
+	IN PROGRESS
+	-> Find clusters, "original" algorithm
+	"""
+
+	## Parameters
+	number_of_cluster_treshold = 2
+	min_similarity_treshold = 0.15
+	intra_dist_treshold = 0.1
+	something_left_to_do = True
+
+	## Create similarity map
+	pmid_to_abstract = load_raw_documents(abstract_folder)
+	similarity_map = create_similarity_map(pmid_to_abstract)
+
+
+	iteration = 0
+	while(something_left_to_do):
+
+		## Step 1
+		## Find the smallest distance between 2 vectors
+		
+		print "[STEP1]"
+		smallest_distance = find_smallest_distance(similarity_map)
+		step = 1 - smallest_distance
+
+		## Step 2
+		## Create and extand clusters
+		print "[STEP2]"
+		possible_extention = False
+		clusters = []
+		for pmid in similarity_map.keys():
+			cluster = []
+			distances = similarity_map[pmid]
+			for pmid_to_test in distances.keys():
+				if(pmid_to_test != pmid and 1 - distances[pmid_to_test] <= step):
+					#print str(pmid) +" <=> " +str(pmid_to_test) +" => " +str(distances[pmid_to_test])
+					cluster = [pmid, pmid_to_test]	
+			clusters.append(cluster)
+
+		valid_clusters = []
+		used_entities = []
+		valid = True
+		for cluster in clusters:
+
+			cluster_id = ""
+			for item in cluster:
+				cluster_id += str(item)+"_"
+				if(item in used_entities):
+					valid = False
+
+			cluster_id = cluster_id[:-1]
+			if(valid and len(cluster) > 0):
+				if(check_intra_cluster_distance(cluster_id, abstract_folder, intra_dist_treshold)):
+					valid_clusters.append(cluster)
+					possible_extention = True
+					for item in cluster:
+						used_entities.append(item)
+
+
+		print "[STEP3]"
+		## Merge regrouped abstract
+		for cluster in valid_clusters:
+			pmid_to_abstract = merge_abstract(cluster, pmid_to_abstract)
+
+		## Compute new similarity map
+		similarity_map = create_similarity_map(pmid_to_abstract)
+
+
+		## Break conditions
+		## break if :
+		##    -> no more than x entities left (i.e reach the minimum number of clusters treshold)
+		##    -> no similarity score above similarity treshold
+		##    -> can't expand cluster without breaking the intra dist treshold
+
+		if(len(similarity_map.keys()) <= number_of_cluster_treshold):
+			something_left_to_do = False
+
+		no_similarity_above_treshold = True
+		for pmid in similarity_map.keys():
+			similarities = similarity_map[pmid]
+			for pmid_to_test in similarities:
+				if(pmid != pmid_to_test and similarities[pmid] >= min_similarity_treshold):
+					no_similarity_above_treshold = False
+
+		if(no_similarity_above_treshold):
+			something_left_to_do = False
+
+		if(not possible_extention):
+			something_left_to_do = False
+
+
+		## Display a message per iteration
+		iteration += 1
+		print "["+str(iteration)+"] => "+str(len(similarity_map.keys())) +" clusters"
+
+	#print similarity_map
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##---------------##
+## MAIN FUNCTION #########################################################
+##---------------##
 
 
 def main(argv):
