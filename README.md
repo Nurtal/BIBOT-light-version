@@ -25,6 +25,7 @@ Command line:
 pip install biopython
 pip install bioservices
 pip install nltk
+pip install unidecode
 ```
 Python console:
 ```python
