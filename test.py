@@ -394,6 +394,9 @@ def find_cluster(abstract_folder):
 def analyse_cluster(cluster_to_distance, pmid_to_abstract):
 	"""
 	IN PROGRESS
+
+	## BUG THERE
+
 	"""
 
 	cluster_to_entities = {}
@@ -412,11 +415,13 @@ def analyse_cluster(cluster_to_distance, pmid_to_abstract):
 			from nltk.tokenize import word_tokenize
 			
 			tokenized_text = word_tokenize(text)
+			tagged = nltk.pos_tag(tokenized_text)
+			entities = nltk.chunk.ne_chunk(tagged)
 
-			for elt in tokenized_text:
-				if(elt not in cluster_to_entities[cluster_id]):
-
-					cluster_to_entities[cluster_id].append(elt)
+			for elt in entities:
+				if(elt[1] in ["NN", "NNP"]):
+					if(elt[0] not in cluster_to_entities[cluster_id]):
+						cluster_to_entities[cluster_id].append(elt[0])
 
 		print cluster_to_entities[cluster_id]
 
@@ -426,17 +431,14 @@ def analyse_cluster(cluster_to_distance, pmid_to_abstract):
 
 
 
-## Playing with TF - IDF vector 
-pmid_to_abstract = load_raw_documents("SAVE/run_0h:45m:3:5/abstract")
-#pmid_to_abstract = load_raw_documents("test/abstract")
-simi = create_similarity_map(pmid_to_abstract)
-
-get_distance_distribution(simi)
-
-
-
+## Playing with TF - IDF vector
 abstract_folder = "SAVE/run_0h:45m:3:5/abstract"
 #abstract_folder = "test/abstract"
+pmid_to_abstract = load_raw_documents(abstract_folder)
+
+simi = create_similarity_map(pmid_to_abstract)
+get_distance_distribution(simi)
+
 cluster_to_distance = find_cluster(abstract_folder)
 analyse_cluster(cluster_to_distance, pmid_to_abstract)
 
