@@ -1,0 +1,1 @@
+k-nearest neighbor algorithm can maximally preserve the local geometrical structure of the data, the LRKNN graph can significantly improve the performance of SDA. Extensive experiments on several real-world databases show that the proposed LRKNN graph is an efficient graph constructor, which can largely outperform other commonly used baselines.

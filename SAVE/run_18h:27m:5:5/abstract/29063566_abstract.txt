@@ -1,0 +1,1 @@
+Conclusions: A major trend in the 2016 publications is the variety of research on "real-world data" - healthcare-generated data, person health data, and patient-reported outcomes -highlighting the opportunities provided by new machine learning techniques as well as new potential risks of privacy breaches.

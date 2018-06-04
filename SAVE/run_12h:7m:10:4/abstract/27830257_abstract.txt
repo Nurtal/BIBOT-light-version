@@ -1,0 +1,1 @@
+The aim of this manuscript is to provide a brief overview of the scientific challenges that should be addressed in order to unlock the full potential of using data from a general point of view, as well as to present some ideas that could help answer specific needs for data understanding in the field of health sciences and epidemiology.

@@ -1,0 +1,1 @@
+This study aimed to compare physical activity estimates across different accelerometer wear locations, wear time protocols, and data processing techniques.

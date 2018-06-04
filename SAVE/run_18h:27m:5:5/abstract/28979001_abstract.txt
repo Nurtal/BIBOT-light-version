@@ -1,0 +1,1 @@
+-4), and was equivalent to LDpred for diabetes. Results were independently validated in the Health and Retirement Study (N = 8,292; 688,398 SNPs). Our report demonstrates the use of machine-learning techniques, coupled with summary-level data from large genome-wide meta-analyses to improve the prediction of polygenic traits.

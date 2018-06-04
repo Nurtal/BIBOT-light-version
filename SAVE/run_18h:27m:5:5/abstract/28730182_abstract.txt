@@ -1,0 +1,1 @@
+Deceased-related thinking is central to grieving and potentially critical to processing of the loss. Self-report measurements might fail to capture important elements of deceased-related thinking and processing. Here, we used a machine learning approach applied to fMRI - known as neural decoding - to develop a measure of ongoing deceased-related processing.

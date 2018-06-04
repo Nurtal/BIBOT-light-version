@@ -1,0 +1,1 @@
+We report a study of machine learning applied to the phenotyping of psychiatric diagnosis for research recruitment in youth depression, conducted with 861 labelled electronic medical records (EMRs) documents. A model was built that could accurately identify individuals who were suitable candidates for a study on youth depression.

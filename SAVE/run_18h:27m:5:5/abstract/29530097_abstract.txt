@@ -1,0 +1,1 @@
+Machine learning tools can expedite systematic review (SR) processes by semi-automating citation screening. Abstrackr semi-automates citation screening by predicting relevant records. We evaluated its performance for four screening projects.

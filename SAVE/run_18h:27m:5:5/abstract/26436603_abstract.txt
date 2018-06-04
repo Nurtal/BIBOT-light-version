@@ -1,0 +1,1 @@
+Although interventions exist to reduce violent crime, optimal implementation requires accurate targeting. We report the results of an attempt to develop an actuarial model using machine learning methods to predict future violent crimes among US Army soldiers.

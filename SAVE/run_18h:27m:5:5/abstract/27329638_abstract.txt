@@ -1,0 +1,1 @@
+While clinical laboratories report most test results as individual numbers, findings, or observations, clinical diagnosis usually relies on the results of multiple tests. Clinical decision support that integrates multiple elements of laboratory data could be highly useful in enhancing laboratory diagnosis.

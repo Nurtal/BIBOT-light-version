@@ -1,0 +1,1 @@
+Pathology reports typically require manual review to abstract research data. We developed a natural language processing (NLP) system to automatically interpret free-text breast pathology reports with limited assistance from manual abstraction.

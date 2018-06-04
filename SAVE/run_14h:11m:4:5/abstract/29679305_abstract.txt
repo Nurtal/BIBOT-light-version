@@ -1,0 +1,1 @@
+To review current practices and technologies within the scope of "Big Data" that can further our understanding of diabetes mellitus and osteoporosis from large volumes of data. "Big Data" techniques involving supervised machine learning, unsupervised machine learning, and deep learning image analysis are presented with examples of current literature.

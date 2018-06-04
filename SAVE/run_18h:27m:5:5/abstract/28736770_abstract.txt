@@ -1,0 +1,1 @@
+F-scores (≈ 80 - 90%) for the helpful comment classes. Our results indicate that machine learning approaches can offer complementary moderating functionality for SW posts. Furthermore, we realize assessing the helpfulness of comments on mental health related online posts is a nuanced topic and needs further attention from the SP research community.

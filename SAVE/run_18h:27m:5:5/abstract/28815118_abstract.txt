@@ -1,0 +1,1 @@
+1 measure of 92.8% (a 40% improvement over the performance obtained using Doc2Vec). These promising results demonstrate the power of our approach, while error analysis reveals remaining obstacles as well as areas for future improvement.

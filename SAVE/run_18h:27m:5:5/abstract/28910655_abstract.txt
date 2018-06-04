@@ -1,0 +1,1 @@
+Self-esteem is an important aspect of individual's mental health. When subjects are not able to complete self-report questionnaire, behavioral assessment will be a good supplement. In this paper, we propose to use gait data collected by Kinect as an indicator to recognize self-esteem.

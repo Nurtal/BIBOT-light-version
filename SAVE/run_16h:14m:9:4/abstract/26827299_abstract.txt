@@ -1,0 +1,1 @@
+A UCB-IBM collaboration explored the application of machine learning to large claims databases to construct an algorithm for antiepileptic drug (AED) choice for individual patients.

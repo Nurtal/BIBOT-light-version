@@ -1,0 +1,1 @@
+Data from social media have been shown to have utility in augmenting traditional approaches to public health surveillance. Quantifying the representativeness of these data is needed for making accurate public health inferences.

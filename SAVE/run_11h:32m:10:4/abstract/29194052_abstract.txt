@@ -1,0 +1,1 @@
+The aim of this review is to present an up-to-date overview of the application of machine learning methods in heart failure including diagnosis, classification, readmissions and medication adherence.

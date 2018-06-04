@@ -1,0 +1,1 @@
+The aim of this study was to quantify the variability of language in free text reports of pulmonary embolus (PE) studies and to gauge the informativeness of free text to predict PE diagnosis using machine learning as proxy for human understanding.

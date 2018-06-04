@@ -1,0 +1,1 @@
+There is an increasing awareness of sarcopenia in older people. We applied machine learning principles to predict mortality and incident immobility in older Belgian men through sarcopenia and frailty characteristics. Mortality could be predicted with good accuracy. Serum 25-hydroxyvitamin D and bone mineral density scores were the most important predictors.

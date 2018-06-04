@@ -1,0 +1,1 @@
+2. Location-specific prediction of future high-risk coronary artery plaques is feasible through machine learning using focal vascular features and demographic variables. Our approach outperforms previously reported results and shows the importance of local factors on high-risk coronary artery plaque development.

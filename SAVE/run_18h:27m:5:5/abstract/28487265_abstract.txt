@@ -1,0 +1,1 @@
+Extracting structured data from narrated medical reports is challenged by the complexity of heterogeneous structures and vocabularies and often requires significant manual effort. Traditional machine-based approaches lack the capability to take user feedbacks for improving the extraction algorithm in real time.

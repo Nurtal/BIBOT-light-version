@@ -1,0 +1,1 @@
+Medication and adverse drug event (ADE) information extracted from electronic health record (EHR) notes can be a rich resource for drug safety surveillance. Existing observational studies have mainly relied on structured EHR data to obtain ADE information; however, ADEs are often buried in the EHR narratives and not recorded in structured data.

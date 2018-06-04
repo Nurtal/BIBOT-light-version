@@ -1,0 +1,97 @@
+\documentclass[a4paper,9pt]{extarticle}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,textcomp}
+\everymath{\displaystyle}
+\usepackage{times}
+\renewcommand\familydefault{\sfdefault}
+\usepackage{tgheros}
+\usepackage[defaultmono,scale=0.85]{droidmono}
+\usepackage{multicol}
+\setlength{\columnseprule}{0pt}
+\setlength{\columnsep}{20.0pt}
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    total={210mm,297mm},
+    left=10mm,right=10mm,top=10mm,bottom=15mm}
+\linespread{1.3}
+\makeatletter
+\renewcommand*{\maketitle}{%
+\noindent
+\begin{minipage}{0.4\textwidth}
+    \begin{tikzpicture}
+    \node[rectangle,rounded corners=6pt,inner sep=10pt,fill=blue!50!black,text width= 0.75\textwidth] {\color{white}\Huge \@title};
+    \end{tikzpicture}
+\end{minipage}
+\hfill
+\begin{minipage}{0.55\textwidth}
+    \begin{tikzpicture}
+    \node[rectangle,rounded corners=3pt,inner sep=10pt,draw=blue!50!black,text width= 0.95\textwidth] {\LARGE \@author};
+    \end{tikzpicture}
+\end{minipage}
+\bigskip\bigskip
+}%
+\makeatother
+\usepackage[explicit]{titlesec}
+\newcommand*\sectionlabel{}
+\titleformat{\section}
+{\gdef\sectionlabel{}
+\normalfont\sffamily\Large\bfseries\scshape}
+{\gdef\sectionlabel{\thesection\ }}{0pt}
+{
+    \noindent
+    \begin{tikzpicture}
+    \node[rectangle,rounded corners=3pt,inner sep=4pt,fill=blue!50!black,text width= 0.95\columnwidth] {\color{white}\sectionlabel#1};
+    \end{tikzpicture}
+}
+\titlespacing*{\section}{0pt}{15pt}{10pt}
+\usepackage{fancyhdr}
+\makeatletter
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot[C]{\footnotesize \@date\ \ \@author}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\makeatother
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\usepackage{xcolor}
+\usepackage{chronosys}
+\usepackage{pgfplots}
+\usepackage{amsmath,amssymb,textcomp}
+\everymath{\displaystyle}
+\title{BIBOT Report}
+\author{
+\begin{center}
+   \vspace{-0.5cm}
+   FIXE DATE
+\end{center}
+}
+\date{}
+\begin{document}
+\maketitle
+\section{Overview}
+\subsection{Keywords}
+\begin{center}
+\begin{tabular}{ccc}
+SjS&skin diseases&skin manifestations\\
+\end{tabular}
+\end{center}
+\subsection{Distributions}
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[scale=0.5]{images/country_repartition} & \includegraphics[scale=0.5]{images/years_publications_evolution}
+\end{tabular}
+\end{center}
+\section{Filters}
+\begin{itemize}
+\item 40301 articles found
+\item 121 articles selected
+\end{itemize}
+\begin{center}
+\includegraphics[scale=0.5]{images/plot_stats}
+\end{center}
+\end{document}

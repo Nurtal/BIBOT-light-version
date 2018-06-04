@@ -1,0 +1,1 @@
+To examine the feasibility of using automated lexical analysis in conjunction with machine learning to create a means of objectively characterising radiology reports for quality improvement.

@@ -1,0 +1,1 @@
+Machine learning (ML) provides novel opportunities for human behavior research and clinical translation, yet its application can have noted pitfalls (Bone et al., 2015). In this work, we fastidiously utilize ML to derive autism spectrum disorder (ASD) instrument algorithms in an attempt to improve upon widely used ASD screening and diagnostic tools.
