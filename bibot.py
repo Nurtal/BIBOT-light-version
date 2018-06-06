@@ -32,6 +32,17 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
 
+##----------##
+## MANIFEST ##########################################################
+##----------##
+
+## => Fetching functions
+##	-> fetch_abstract
+##	-> get_ListOfArticles
+##	-> save_abstracts
+##	-> load_text
+##	...
+
 ##------------##
 ## PARAMETERS ########################################################
 ##------------##
@@ -80,6 +91,21 @@ def get_ListOfArticles(term, max_count):
 
 	return listOfArticles;
 
+
+def get_article_title(pmid):
+	"""
+	Connect to pubmed database and get the article
+	title of the given pmid.
+	Return NA if faild
+	"""
+	handle = efetch(db='pubmed', id=pmid, retmode='xml', )
+	xml_data = read(handle)
+	xml_data = xml_data['PubmedArticle'][0]
+	try:
+		title = xml_data['MedlineCitation']['Article']['ArticleTitle']
+	except:
+		title = "NA"
+	return title
 
 
 def save_abstract(abstract, save_file):
