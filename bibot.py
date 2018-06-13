@@ -42,6 +42,10 @@ import matplotlib.pyplot as plt
 ##	-> save_abstracts
 ##	-> load_text
 ##	...
+##
+## => analysing function
+##	-> article_is_a_case_report
+##
 
 ##------------##
 ## PARAMETERS ########################################################
@@ -65,9 +69,13 @@ def fetch_abstract(pmid):
 	## (can happen when article is in chinese)
 	##
 	
-	handle = efetch(db='pubmed', id=pmid, retmode='xml', )
-	xml_data = read(handle)
-	xml_data = xml_data['PubmedArticle'][0]
+	try:
+		handle = efetch(db='pubmed', id=pmid, retmode='xml', )
+		xml_data = read(handle)
+		xml_data = xml_data['PubmedArticle'][0]
+
+	except:
+		return None
 
 	try:
 		article = xml_data['MedlineCitation']['Article']
@@ -76,6 +84,8 @@ def fetch_abstract(pmid):
 	except IndexError:
 		return None
 	except KeyError:
+		return None
+	except:
 		return None
 
 
@@ -265,11 +275,11 @@ def evaluate_article(pmid):
 		validation_check["keywords_2"] = False
 		validation_keywords["keywords_1"]= ["algorithm", "machine" "learning", "neural", "network", "statistic", "deep", "classification", "model"]
 		validation_keywords["keywords_2"] = ["Sjogren" ,"sjogren", "lupus", "autoimmunity", "rhumatoid", "arthrisis", "RA", "SjS", "SLE"]
-		validation_check["exclusion_1"] = False
+		exclusion_check["exclusion_1"] = False
 		exclusion_keywords["exclusion_1"]= []
 
 	if(not exclusion_keywords_found):
-		validation_check["exclusion_1"] = False
+		exclusion_check["exclusion_1"] = False
 		exclusion_keywords["exclusion_1"]= []
 		
 
@@ -373,7 +383,6 @@ def evaluate_article(pmid):
 			if(article_is_a_case_report(abstract_file_name)):
 				case_report_check = True
 
-
 	##--------------##
 	## PASS OR FAIL ##
 	##--------------##
@@ -406,7 +415,6 @@ def evaluate_article(pmid):
 	if(case_report_only and case_report_check):
 		print "[DEBUG] => EXLUDED"
 		smart_check_passed = False
-
 
 
 
