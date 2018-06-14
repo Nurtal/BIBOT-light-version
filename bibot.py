@@ -181,10 +181,18 @@ def article_is_a_case_report(abstract_file):
 		words_in_sentence = sentence.split(" ")
 		index = 0
 		for word in words_in_sentence:
-			if(word in ["Case", "Cases", "case", "case"]):
+			if(word in ["Case", "Cases", "case", "cases"]):
 				if(index + 1 < len(words_in_sentence)):
 					if(words_in_sentence[index+1] in ["report", "reports"]):
 						sentences_to_investigate.append(sentence)
+
+					suspect_tag = ["Presented", "presented", "Present", "present", "Presentation", "presentation"]
+					suspect_tag += ["Report", "report"]
+					suspect_tag += ["Describe", "describe", "description", "Description"]
+					for tag in suspect_tag:
+						if tag in words_in_sentence:
+							sentences_to_investigate.append(sentence)
+
 			index += 1
 
 	if(len(sentences_to_investigate) > 0):
