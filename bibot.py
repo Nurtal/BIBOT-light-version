@@ -153,6 +153,64 @@ def load_text(text_file):
 
 
 
+def article_is_a_literature_review(abstract_file):
+	"""
+	Try to detect from the abstract file if the
+	article is a literature review
+	
+	abstract_file is the name of the abstract file
+
+	return True if detection is trigered	
+	"""
+
+	sentences_to_investigate = []
+	found_something = False
+
+	## store abstract in a string
+	abstract = open(abstract_file, "r")
+	abstract_text = ""
+	for line in abstract:
+		try:
+			abstract_text += line.decode('utf-8')
+		except:
+			abstract_text = ""
+	abstract.close()
+
+	## catch the suspect sentences
+	sentences = abstract_text.split(". ")
+	for sentence in sentences:
+		words_in_sentence = sentence.split(" ")
+
+		index = 0
+		for word in words_in_sentence:
+
+			if(word in ["Review", "review"]):
+
+				if(index + 1 < len(words_in_sentence) and index-1 >= 0):
+					if(words_in_sentence[index-1] in ["we", "We", "the", "The", "this", "This"]):
+						sentences_to_investigate.append(sentence)
+
+				suspect_tag = ["literature", "Literature"]
+				suspect_tag += ["covers", "covered"]
+				suspect_tag += ["retrospective"]
+				suspect_tag += ["summarized", "Summarized", "summarize", "Summarize", "summarizes", "Summarizes"]
+
+				for tag in suspect_tag:
+					if tag in words_in_sentence:
+						sentences_to_investigate.append(sentence)
+
+			index += 1
+
+
+	if(len(sentences_to_investigate) > 0):
+		found_something = True
+
+	return found_something
+
+
+
+
+
 def article_is_a_case_report(abstract_file):
 	"""
 	IN PROGRESS
