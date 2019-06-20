@@ -1,5 +1,8 @@
 # BIBOT
 
+## Warning
+Deprecated version
+
 ## Overview
 
 BIBOT stand for bibliography bot, it uses natural language processing (NLP) approaches to parse the content of abstracts of large number of publications; NLP is an emerging field of machine learning, which aims at capturing the meaning of sentences and texts written in a natural language (English), such as scientific articles. BIBOT is written in python 2.7 language, and is designed to interact with the Medline database through the NCBI API, in order to retrieve abstracts, articles and meta-data about theses articles (year of publication, author list, journal of publication, language, conflict of interest statement, etc.).
